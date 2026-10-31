@@ -1,26 +1,79 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAGOS LIFE</title><style>body{margin:0;font-family:Arial;background:#050510;color:#fff}#ui{padding:10px;display:flex;justify-content:space-between;background:#111}#locBox{margin:10px;padding:15px;background:#1a2040;border-radius:18px;text-align:center;min-height:250px}#actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}button{border:0;padding:12px;border-radius:12px;font-weight:bold;color:#fff}.p{background:#7c5cff}.y{background:#ffb700;color:#000}.pi{background:#ff3b9a}.g{background:#00c06a}.d{background:#222}.b{background:#2196F3}.r{background:#ff3b3b}#log{position:fixed;bottom:10px;left:10px;right:10px;background:#000d;padding:10px;border-radius:10px;display:none;text-align:center}</style></head><body>
-<div id="ui"><div>💰 $<span id="m">1100</span><br>🏦 $<span id="bk">0</span><br>💍 <span id="mar">Single</span></div><div>🏠 Lv<span id="lv">0</span> | 🚗 <span id="cr">0</span><br>👶 <span id="kd">0</span></div></div>
-<div id="locBox"><div style="font-size:50px" id="hs">🏚️</div><div id="ht"><b>Oshodi - Under Bridge</b></div><div style="font-size:11px;margin-top:10px;opacity:.8">Agbero collect $50 daily! Danfo work +$150. Yahoo +$800 but EFCC fit catch! POS +$80 every 10sec</div><div style="margin-top:10px;font-size:11px">Traffic: <span id="tf">FREE</span> | Energy: <span id="en">100%</span></div></div>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAGOS - SEE PLAYERS</title><style>
+body{margin:0;font-family:Arial;background:#050510;color:#fff;overflow:hidden}
+#ui{padding:8px 10px;display:flex;justify-content:space-between;background:#111;font-size:13px;position:sticky;top:0;z-index:20}
+#street{position:relative;width:100%;height:38vh;background:linear-gradient(#1a2a60,#0a0a0f);border-bottom:3px solid #222;overflow:hidden}
+.npc{position:absolute;bottom:10px;text-align:center;transition:all 0.8s linear;font-size:11px}
+.npc b{display:block;font-size:22px}
+.player{position:absolute;bottom:10px;text-align:center;animation:walk 8s infinite linear}
+@keyframes walk{0%{left:-10%}100%{left:110%}}
+#playersList{margin:6px 10px;background:#1117;padding:8px;border-radius:10px;font-size:11px;max-height:90px;overflow:auto}
+#actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:8px;background:#0f0f1f}
+button{border:0;padding:10px;border-radius:12px;font-weight:bold;color:#fff;font-size:11px}
+.p{background:#7c5cff}.y{background:#ffb700;color:#000}.pi{background:#ff3b9a}.g{background:#00c06a}.d{background:#222}.b{background:#2196F3}.r{background:#ff3b3b}
+#log{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);background:#000e;padding:8px 14px;border-radius:20px;font-size:12px;z-index:30;display:none}
+</style></head><body>
+<div id="ui"><div>💰 $<span id="m">1100</span> 🏦 $<span id="bk">0</span><br>🏠 Lv<span id="lv">0</span> 🚗 <span id="cr">0</span> 👶 <span id="kd">0</span></div><div style="text-align:right">📍 <span id="loc">Oshodi</span><br>💍 <span id="mar">Single</span> ⚡ <span id="en">100%</span></div></div>
+
+<div id="street"></div>
+
+<div id="playersList"><b>👥 ONLINE PLAYERS IN LAGOS (LIVE):</b> <span id="plist"></span><br><br><b>🧍 NPCs ON STREET:</b> <span id="nlist"></span><br><small style="opacity:.6">Tap NPC to interact!</small></div>
+
 <div id="actions">
-<button class="p" onclick="work()">🚌 DANFO WORK</button><button class="b" onclick="yahoo()">💻 YAHOO</button>
-<button class="p" onclick="build()">🏗️ BUILD $1k</button><button class="p" onclick="car()">🚘 CAR $2k</button>
-<button class="y" onclick="bank()">🏦 BANK</button><button class="r" onclick="agbero()">PAY AGBERO $50</button>
-<button class="pi" onclick="marry()">💍 MARRY +30M</button><button class="g" onclick="sleep()">🛏️ SLEEP</button>
-<button class="d" onclick="pos()">🏧 POS</button><button class="d" onclick="papers()">📄 PAPERS $1k</button>
-</div><div id="log"></div>
+<button class="p" onclick="work()">🚌 WORK</button><button class="b" onclick="yahoo()">💻 YAHOO</button><button class="p" onclick="build()">🏗️ BUILD</button>
+<button class="p" onclick="car()">🚘 CAR</button><button class="y" onclick="bank()">🏦 BANK</button><button class="r" onclick="talk('agbero')">🔪 AGBERO</button>
+<button class="pi" onclick="marry()">💍 MARRY 30M</button><button class="g" onclick="sleep()">🛏️ SLEEP</button><button class="d" onclick="pos()">🏧 POS</button>
+</div>
+<div id="log"></div>
 <script>
-let money=1100,bank=0,lv=0,cars=0,kids=0,en=100,hasPOS=false,hasPap=false,married=false,hC=1000,cC=2000,owe=0;
+let money=1100,bank=0,lv=0,cars=0,kids=0,en=100,married=false,hasPOS=false;
+const street=document.getElementById('street');
+const npcs=[
+{id:'agbero',emoji:'🔪',name:'Agbero Tunde',say:'Oga pay $50!',job:'collect'},
+{id:'mama',emoji:'🍲',name:'Mama Put',say:'Come chop $20',job:'food'},
+{id:'police',emoji:'👮',name:'Police Musa',say:'Oga papers?',job:'police'},
+{id:'babe',emoji:'💃',name:'Amaka Babe',say:'You fine o, marry me?',job:'marry'},
+{id:'yahoo',emoji:'👨‍💻',name:'Yahoo Kay',say:'I fit teach you yahoo',job:'yahoo'},
+{id:'danfo',emoji:'🚌',name:'Danfo Driver',say:'Enter with your change!',job:'driver'}
+];
+let players=['Damilola_Oshodi','Blessing_Lekki','Wizzy_VI','Tobi_Banana','Emeka_Computer','Fatima_Yaba'];
+
 function L(t){let l=document.getElementById('log');l.innerText=t;l.style.display='block';setTimeout(()=>l.style.display='none',2500)}
-function U(){document.getElementById('m').innerText=money;document.getElementById('bk').innerText=bank;document.getElementById('lv').innerText=lv;document.getElementById('cr').innerText=cars;document.getElementById('kd').innerText=kids;document.getElementById('en').innerText=en+'%';document.getElementById('mar').innerText=married?'Married':'Single';document.getElementById('tf').innerText=['FREE','HEAVY','GO-SLOW!'][Math.floor(Math.random()*3)]}
-function work(){if(en<=0)return L('No energy! Sleep!');money+=married?300:150;en-=5;L('Danfo +$'+(married?300:150));U()}
-function yahoo(){if(Math.random()<0.3){money-=500;L('🚔 EFCC CATCH! -$500')}else{money+=800;L('Yahoo pay +$800')}en-=10;U()}
-function build(){if(money>=hC&&lv<5){money-=hC;lv++;hC=Math.floor(hC*2.2);L('Built Lv'+lv)}else L('Need $'+hC);U()}
-function car(){if(money>=cC){money-=cC;cars++;cC=Math.floor(cC*1.8);L('Car bought')}else L('Need $'+cC);U()}
-function agbero(){if(money>=50){money-=50;owe=0;L('Agbero: Thank you Oga')}else L('No money!');U()}
-function papers(){if(money>=1000){money-=1000;hasPap=true;L('Papers bought!')}else L('Need $1k');U()}
-function pos(){if(hasPOS)return L('POS already running');if(money>=1000){money-=1000;hasPOS=true;L('POS started +$80/10s');setInterval(()=>{if(hasPOS){money+=80;U()}},10000)}else L('Need $1k');U()}
-function bank(){let a=prompt('How much deposit?');a=parseInt(a);if(a>0&&money>=a){money-=a;bank+=a;L('Deposited $'+a)}U()}
-function marry(){if(!married){married=true;money+=30000000;kids=1;L('💍 Married! +$30M! +1 kid')}else L('Already married');U()}
-function sleep(){if(!married)return L('Marry first!');if(lv==0)return L('Need house!');en=100;money+=1000;if(Math.random()<0.3){kids++;L('👶 New baby! +$1k')}else L('Slept! Energy 100% +$1k');U()}
-U();setInterval(()=>{if(bank>0){let i=Math.floor(bank*0.15);bank+=i;L('Bank +$'+i);U()}},30000);
+function U(){document.getElementById('m').innerText=money;document.getElementById('bk').innerText=bank;document.getElementById('lv').innerText=lv;document.getElementById('cr').innerText=cars;document.getElementById('kd').innerText=kids;document.getElementById('en').innerText=en+'%';document.getElementById('mar').innerText=married?'Married':'Single'}
+
+function renderStreet(){
+ street.innerHTML='';
+ npcs.forEach((n,i)=>{
+  let d=document.createElement('div');d.className='npc';d.style.left=(10+i*15)+'%';d.innerHTML=`<b>${n.emoji}</b>${n.name}`;d.onclick=()=>talk(n.id);street.appendChild(d);
+ });
+ // fake players walking
+ players.forEach((p,i)=>{
+  let d=document.createElement('div');d.className='player';d.style.left=Math.random()*80+'%';d.style.bottom=(15+Math.random()*20)+'px';d.style.animationDelay=i+'s';d.innerHTML=`🧑<br><small>${p}</small>`;street.appendChild(d);
+ });
+ document.getElementById('plist').innerText=players.map(p=> '🟢 '+p).join(' | ');
+ document.getElementById('nlist').innerText=npcs.map(n=> n.emoji+' '+n.name).join(' | ');
+}
+function talk(id){
+ let n=npcs.find(x=>x.id==id);
+ if(!n) return;
+ if(id=='agbero'){ if(money>=50){money-=50;L('You paid Agbero Tunde $50. He comot.');} else L('Agbero: You no get money? I go beat you!'); }
+ if(id=='mama'){ if(money>=20){money-=20;en=100;L('Mama Put: Chop jollof! Energy 100%');} else L('No money for food!'); }
+ if(id=='police'){ if(cars>0&&!window.hasPap){money-=300;L('👮 Police seize you! -$300 (buy papers!)'); cars=Math.max(0,cars-1);} else L('Police: You clean, go!'); }
+ if(id=='babe'){ L('Amaka: Marry me I give you $30M bonus! Click MARRY'); }
+ if(id=='yahoo'){ yahoo(); }
+ if(id=='danfo'){ work(); }
+ U();
+}
+function work(){if(en<=0)return L('Sleep first!');money+=married?300:150;en-=5;L('Drove danfo +$'+(married?300:150));U()}
+function yahoo(){if(Math.random()<0.3){money-=500;L('EFCC catch! -$500')}else{money+=800;L('Yahoo +$800')}en-=10;U()}
+function build(){let c=1000*Math.pow(2.2,lv);if(money>=c&&lv<5){money-=c;lv++;L('Built! Lv'+lv)}else L('Need $'+Math.floor(c));U()}
+function car(){let c=2000*Math.pow(1.8,cars);if(money>=c){money-=c;cars++;L('Car bought!')}else L('Need $'+Math.floor(c));U()}
+function bank(){let a=prompt('Deposit amount');a=parseInt(a);if(a>0&&money>=a){money-=a;bank+=a;L('Bank $'+a)}U()}
+function marry(){if(!married){married=true;money+=30000000;kids=1;L('💍 Married Amaka! +$30M')}else L('Already married');U()}
+function sleep(){if(!married)return L('Marry first!');if(lv==0)return L('Need house!');en=100;money+=1000;if(Math.random()<0.3){kids++;L('👶 Baby born!')}else L('Slept! +$1k Energy 100%');U()}
+function pos(){if(hasPOS)return L('POS running');if(money>=1000){money-=1000;hasPOS=true;L('POS start +$80/10s');setInterval(()=>{if(hasPOS){money+=80;U()}},10000)}else L('Need $1k');U()}
+
+// move npcs randomly
+setInterval(()=>{renderStreet()},5000);
+setInterval(()=>{if(bank>0){let i=Math.floor(bank*0.15);bank+=i;L('Bank interest +$'+i);U()}},30000);
+renderStreet();U();
 </script></body></html>
