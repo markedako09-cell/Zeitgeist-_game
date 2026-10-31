@@ -1,120 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>ZEITGEIST - LAGOS LIFE</title>
-<style>
-body{margin:0;font-family:Arial;background:#050510;color:#fff;overflow-x:hidden}
-#ui{padding:10px;display:flex;justify-content:space-between;background:#0f0f1f;position:sticky;top:0;z-index:10}
-#ui b{color:#ffb700}
-#locBox{margin:10px;padding:16px;background:radial-gradient(circle at center,#1a2a60,#050510);border-radius:18px;border:1px solid #222;min-height:300px;text-align:center}
-#house{font-size:55px}
-.badge{display:inline-block;background:#ffffff15;padding:4px 8px;border-radius:20px;font-size:11px;margin:2px}
-#worldNav{display:flex;gap:6px;overflow:auto;padding:8px 10px}
-#worldNav span{background:#1e1e35;padding:8px 12px;border-radius:20px;font-size:12px;white-space:nowrap;border:1px solid #333}
-#worldNav span.active{background:#7c5cff}
-#actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:#0f0f1f;padding-bottom:90px}
-button{border:0;padding:13px;border-radius:14px;font-weight:bold;color:#fff;font-size:13px}
-.purple{background:#7c5cff} .yellow{background:#ffb700;color:#000} .pink{background:#ff3b9a} .green{background:#00c06a} .dark{background:#222} .blue{background:#2196F3} .red{background:#ff3b3b}
-#log{position:fixed;bottom:78px;left:10px;right:10px;background:#000d;padding:8px 12px;border-radius:12px;font-size:12px;display:none;z-index:20;text-align:center}
-.modal{position:fixed;inset:0;background:#000e;display:none;align-items:center;justify-content:center;z-index:99}
-.box{background:#1e1e2f;padding:20px;border-radius:16px;width:85%;max-width:340px}
-input{width:100%;padding:10px;border-radius:8px;border:0;margin:8px 0}
-</style>
-</head>
-<body>
-<div id="ui">
-<div>💰 $<span id="money">1100</span><br>🏦 $<span id="bank">0</span> <b id="interest">+0%</b><br>💍 <span id="marry">Single</span></div>
-<div style="text-align:right">🏠 Lv.<span id="hlv">0</span> | 🚗 <span id="cars">0</span><br>👶 Kids: <span id="kids">0</span><br><small id="wanted"></small></div>
-</div>
-
-<div id="worldNav">
-<span onclick="travel('Makurdi Yard',0)" id="n0">Makurdi</span>
-<span onclick="travel('Oshodi',0)" class="active" id="n1">Oshodi - FREE</span>
-<span onclick="travel('Computer Village',0)" id="n2">Computer Village</span>
-<span onclick="travel('Lekki',500)" id="n3">Lekki $500</span>
-<span onclick="travel('VI',2000)" id="n4">VI $2k</span>
-<span onclick="travel('Banana Island',10000)" id="n5">Banana $10k</span>
-</div>
-
-<div id="locBox">
-<div id="house">🏚️</div>
-<div id="houseText" style="font-weight:bold;margin:6px 0">Oshodi Under Bridge - Empty Land</div>
-<div id="locDesc" style="font-size:12px;opacity:.8;margin-top:8px">You just landed Lagos. No house. Agbero dey look you. Find work!</div>
-<div style="margin-top:14px;background:#0006;padding:10px;border-radius:12px;font-size:11px;text-align:left">
-<b>LAGOS LIFE:</b><br>
-• 🚌 Danfo Driver: +$150 (safe)<br>
-• 💻 Yahoo: +$800 but 30% police catch +$500 fine<br>
-• 🏧 POS Business: Need $1k to start, +$80 every 10sec<br>
-• 👮 LASTMA: If you get car without papers ($1k), dem fit seize car!<br>
-• 🔥 Agbero: Collect $50 daily for Oshodi
-<div style="margin-top:8px"><span class="badge" id="traffic">Traffic: FREE</span> <span class="badge" id="energy">Energy: 100%</span> <span class="badge">Single Bed</span></div>
-</div>
-</div>
-
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAGOS LIFE</title><style>body{margin:0;font-family:Arial;background:#050510;color:#fff}#ui{padding:10px;display:flex;justify-content:space-between;background:#111}#locBox{margin:10px;padding:15px;background:#1a2040;border-radius:18px;text-align:center;min-height:250px}#actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}button{border:0;padding:12px;border-radius:12px;font-weight:bold;color:#fff}.p{background:#7c5cff}.y{background:#ffb700;color:#000}.pi{background:#ff3b9a}.g{background:#00c06a}.d{background:#222}.b{background:#2196F3}.r{background:#ff3b3b}#log{position:fixed;bottom:10px;left:10px;right:10px;background:#000d;padding:10px;border-radius:10px;display:none;text-align:center}</style></head><body>
+<div id="ui"><div>💰 $<span id="m">1100</span><br>🏦 $<span id="bk">0</span><br>💍 <span id="mar">Single</span></div><div>🏠 Lv<span id="lv">0</span> | 🚗 <span id="cr">0</span><br>👶 <span id="kd">0</span></div></div>
+<div id="locBox"><div style="font-size:50px" id="hs">🏚️</div><div id="ht"><b>Oshodi - Under Bridge</b></div><div style="font-size:11px;margin-top:10px;opacity:.8">Agbero collect $50 daily! Danfo work +$150. Yahoo +$800 but EFCC fit catch! POS +$80 every 10sec</div><div style="margin-top:10px;font-size:11px">Traffic: <span id="tf">FREE</span> | Energy: <span id="en">100%</span></div></div>
 <div id="actions">
-<button class="purple" onclick="work()">🚌 DANFO WORK</button>
-<button class="blue" onclick="yahoo()">💻 YAHOO +$800</button>
-<button class="purple" onclick="build()">🏗️ BUILD <small id="hCost">$1,000</small></button>
-<button class="purple" onclick="buyCar()">🚘 CAR <small id="cCost">$2,000</small></button>
-<button class="yellow" onclick="openBank()">🏦 BANK / DEPOSIT</button>
-<button class="red" onclick="payAgbero()">🔪 PAY AGBERO $50</button>
-<button class="pink" onclick="openMarry()">💍 MARRY +$30M</button>
-<button class="green" onclick="sleep()">🛏️ SLEEP TOGETHER</button>
-<button class="dark" onclick="pos()">🏧 START POS</button>
-<button class="dark" onclick="buyPapers()">📄 BUY CAR PAPERS $1k</button>
-</div>
-
-<div id="log"></div>
-
-<div class="modal" id="bankM"><div class="box"><h3>ZEITGEIST BANK - 15% every 30sec</h3><input type="number" id="bankAmt" placeholder="500"><button class="yellow" onclick="deposit()">Deposit</button><button class="dark" onclick="withdraw()">Withdraw All</button><button class="dark" onclick="closeM()">Close</button></div></div>
-<div class="modal" id="marryM"><div class="box"><h3>💍 Marry Lagos Babe / Guy</h3><p style="font-size:12px">Marry = +$30M bonus, share house, x2 income, kids!</p><input type="text" id="cCode" placeholder="Name e.g. Amaka"><button class="pink" onclick="marry()">Marry Now +$30M</button><button class="dark" onclick="closeM()">Close</button></div></div>
-
+<button class="p" onclick="work()">🚌 DANFO WORK</button><button class="b" onclick="yahoo()">💻 YAHOO</button>
+<button class="p" onclick="build()">🏗️ BUILD $1k</button><button class="p" onclick="car()">🚘 CAR $2k</button>
+<button class="y" onclick="bank()">🏦 BANK</button><button class="r" onclick="agbero()">PAY AGBERO $50</button>
+<button class="pi" onclick="marry()">💍 MARRY +30M</button><button class="g" onclick="sleep()">🛏️ SLEEP</button>
+<button class="d" onclick="pos()">🏧 POS</button><button class="d" onclick="papers()">📄 PAPERS $1k</button>
+</div><div id="log"></div>
 <script>
-let money=1100,bank=0,hlv=0,cars=0,kids=0,energy=100,hasPOS=false,hasPapers=false,married=false,loc='Oshodi',agberoOwe=0;
-let hCost=1000,cCost=2000;
-const houses=["🏚️ Under Bridge","🏠 Face-Me Hut","🏡 Bungalow Yaba","🏘️ 2-Bed Lekki","🏰 4-Bed VI","🌆 BANANA MANSION"];
-const descs=["Agbero dey watch you. No sleep.","Small room, fan dey blow hot air","You don try! Small babe fit visit","Lekki boy! You don blow small","Big boy for VI! Club dey call you","BILLIONAIRE! Banana Island landlord!"];
-function log(t){let l=document.getElementById('log');l.innerText=t;l.style.display='block';setTimeout(()=>l.style.display='none',3000)}
-function upd(){
- document.getElementById('money').innerText=money;document.getElementById('bank').innerText=bank;document.getElementById('hlv').innerText=hlv;document.getElementById('cars').innerText=cars;document.getElementById('kids').innerText=kids;document.getElementById('hCost').innerText='$'+hCost;document.getElementById('cCost').innerText='$'+cCost;document.getElementById('house').innerText=houses[hlv].split(' ')[0];document.getElementById('houseText').innerText=houses[hlv]+' - '+loc;document.getElementById('locDesc').innerText=descs[hlv];document.getElementById('marry').innerText=married?'Married':'Single';document.getElementById('energy').innerText='Energy: '+energy+'%';
- document.getElementById('interest').innerText=bank>0?'(+15%)':'';
- let t=['FREE','LIGHT','HEAVY','STANDSTILL GO-SLOW!'];document.getElementById('traffic').innerText='Traffic: '+t[Math.floor(Math.random()*4)];
- if(money<0) document.getElementById('wanted').innerText='🚨 BROKE!'; else document.getElementById('wanted').innerText=agberoOwe>0?'🔪 Agbero Owe: $'+agberoOwe:'';
-}
-function work(){
- if(energy<=0) return log('😴 No energy! Sleep together!');
- money+= married?300:150; energy-=5; log('🚌 Drove Danfo +$'+(married?300:150)); upd();
-}
-function yahoo(){
- if(Math.random()<0.3){ money-=500; log('🚔 EFCC CATCH YOU! -$500 fine!'); } else { money+=800; log('💻 Client pay! +$800'); } energy-=10; upd();
-}
-function build(){
- if(money>=hCost && hlv<5){ money-=hCost; hlv++; hCost=Math.floor(hCost*2.5); log('🏗️ Built! Now '+houses[hlv]); } else log('Need $'+hCost); upd();
-}
-function buyCar(){
- if(money>=cCost){ money-=cCost; cars++; cCost=Math.floor(cCost*1.8); log('🚘 Car bought! Total '+cars); if(!hasPapers) log('⚠️ No papers! LASTMA fit seize!'); } else log('Need $'+cCost); upd();
-}
-function payAgbero(){ if(money>=50){ money-=50; agberoOwe=0; log('Agbero: Oga thank you. You fit stay.'); } else { agberoOwe+=50; log('Agbero: You no get money? Owe $50!'); } upd(); }
-function buyPapers(){ if(money>=1000){ money-=1000; hasPapers=true; log('📄 Papers bought! LASTMA no fit catch you'); } else log('Need $1k for papers'); upd(); }
-function pos(){ if(hasPOS){ log('POS already running +$80'); return; } if(money>=1000){ money-=1000; hasPOS=true; log('🏧 POS started! Passive income'); setInterval(()=>{ if(hasPOS){ money+=80; upd(); } },10000); } else log('Need $1k to start POS'); upd(); }
-function travel(p,c){
- if(money>=c){ money-=c; loc=p; document.querySelectorAll('#worldNav span').forEach(s=>s.classList.remove('active')); log('✈️ Traveled to '+p); if(p=='Banana Island' && hlv<5) log('You need mansion to live here!'); if(p!='Oshodi') agberoOwe=0; } else log('Need $'+c+' to go '+p); upd();
-}
-function openBank(){ document.getElementById('bankM').style.display='flex'; }
-function openMarry(){ document.getElementById('marryM').style.display='flex'; }
-function closeM(){ document.getElementById('bankM').style.display='none'; document.getElementById('marryM').style.display='none'; }
-function deposit(){ let a=parseInt(document.getElementById('bankAmt').value); if(a>0 && money>=a){ money-=a; bank+=a; closeM(); log('Deposited $'+a+' to bank'); } upd(); }
-function withdraw(){ money+=bank; bank=0; closeM(); log('Withdrawn all'); upd(); }
-function marry(){ let n=document.getElementById('cCode').value||'Lagos Babe'; married=true; money+=30000000; kids=1; closeM(); log('💍 MARRIED '+n+'! +$30M BONUS! Kids +1'); upd(); }
-function sleep(){
- if(!married) return log('You need marry first to sleep together!');
- if(hlv==0) return log('You need house to sleep together!');
- energy=100; money+=1000; if(Math.random()<0.2){ kids++; log('👶 New baby! Sleep bonus +$1k +energy! Kids: '+kids); } else log('😍 Slept together! Energy 100% +$1k bonus next day'); upd();
-}
-setInterval(()=>{ if(bank>0){ let i=Math.floor(bank*0.15); bank+=i; log('🏦 Bank interest +$'+i); upd(); } },30000);
-setInterval(()=>{ if(loc=='Oshodi'){ agberoOwe+=50; if(agberoOwe>200) log('🔪 AGBERO VEX! Pay $'+agberoOwe); upd(); } },60000);
-upd();
-</script>
-</body>
-</html> 
+let money=1100,bank=0,lv=0,cars=0,kids=0,en=100,hasPOS=false,hasPap=false,married=false,hC=1000,cC=2000,owe=0;
+function L(t){let l=document.getElementById('log');l.innerText=t;l.style.display='block';setTimeout(()=>l.style.display='none',2500)}
+function U(){document.getElementById('m').innerText=money;document.getElementById('bk').innerText=bank;document.getElementById('lv').innerText=lv;document.getElementById('cr').innerText=cars;document.getElementById('kd').innerText=kids;document.getElementById('en').innerText=en+'%';document.getElementById('mar').innerText=married?'Married':'Single';document.getElementById('tf').innerText=['FREE','HEAVY','GO-SLOW!'][Math.floor(Math.random()*3)]}
+function work(){if(en<=0)return L('No energy! Sleep!');money+=married?300:150;en-=5;L('Danfo +$'+(married?300:150));U()}
+function yahoo(){if(Math.random()<0.3){money-=500;L('🚔 EFCC CATCH! -$500')}else{money+=800;L('Yahoo pay +$800')}en-=10;U()}
+function build(){if(money>=hC&&lv<5){money-=hC;lv++;hC=Math.floor(hC*2.2);L('Built Lv'+lv)}else L('Need $'+hC);U()}
+function car(){if(money>=cC){money-=cC;cars++;cC=Math.floor(cC*1.8);L('Car bought')}else L('Need $'+cC);U()}
+function agbero(){if(money>=50){money-=50;owe=0;L('Agbero: Thank you Oga')}else L('No money!');U()}
+function papers(){if(money>=1000){money-=1000;hasPap=true;L('Papers bought!')}else L('Need $1k');U()}
+function pos(){if(hasPOS)return L('POS already running');if(money>=1000){money-=1000;hasPOS=true;L('POS started +$80/10s');setInterval(()=>{if(hasPOS){money+=80;U()}},10000)}else L('Need $1k');U()}
+function bank(){let a=prompt('How much deposit?');a=parseInt(a);if(a>0&&money>=a){money-=a;bank+=a;L('Deposited $'+a)}U()}
+function marry(){if(!married){married=true;money+=30000000;kids=1;L('💍 Married! +$30M! +1 kid')}else L('Already married');U()}
+function sleep(){if(!married)return L('Marry first!');if(lv==0)return L('Need house!');en=100;money+=1000;if(Math.random()<0.3){kids++;L('👶 New baby! +$1k')}else L('Slept! Energy 100% +$1k');U()}
+U();setInterval(()=>{if(bank>0){let i=Math.floor(bank*0.15);bank+=i;L('Bank +$'+i);U()}},30000);
+</script></body></html>
