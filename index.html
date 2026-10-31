@@ -1,67 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ZEITGEIST V3 - Family Life</title>
-<style>
-body{margin:0;font-family:Arial;background:#0a0a12;color:#fff}
-#top{padding:10px;background:#111;display:flex;justify-content:space-between;font-size:13px}
-#world{margin:10px;background:radial-gradient(#1d2a4a,#0a0a12);border-radius:16px;padding:12px;min-height:360px}
-.houseBox{font-size:48px;text-align:center}
-.npcRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.npc{background:#ffffff14;padding:8px 10px;border-radius:12px;font-size:12px}
-#actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:#111}
-button{padding:12px;border:0;border-radius:12px;font-weight:bold;color:#fff}
-.p{background:#7c5cff} .g{background:#ffb700;color:#000} .pi{background:#ff3b9a} .gr{background:#00c06a} .r{background:#ff3a3a}
-.modal{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:10}
-.box{background:#1e1e30;padding:18px;border-radius:14px;width:86%;max-width:320px}
-input{width:100%;padding:10px;border-radius:8px;border:0;margin:6px 0}
-</style>
-</head>
-<body>
-<div id="top">
-<div>💰 $<span id="money">500</span><br>🏦 $<span id="bank">0</span><br>💍 <span id="marryStatus">Single</span></div>
-<div style="text-align:right">🏠 Lv.<span id="hlv">0</span> | 🚗 <span id="cars">0</span><br>👶 Kids: <span id="kidsCount">0</span><br><small id="bedBonus"></small></div>
-</div>
-
-<div id="world">
-<div class="houseBox" id="houseEmoji">🏚️</div>
-<div style="text-align:center" id="houseText">Empty Land</div>
-<div style="text-align:center;margin-top:6px">
-<span id="bedView">🛏️ Single Bed</span> | <span id="coupleView"></span>
-</div>
-
-<div class="npcRow" id="kidsRow"></div>
-
-<div style="margin-top:12px;background:#0006;padding:8px;border-radius:8px;font-size:12px">
-<b>Family House:</b> When married, you BOTH live here. Built together. Sleep same bed = +energy +bonus income next day.
-</div>
-</div>
-
-<div id="actions">
-<button class="p" onclick="work()">💼 WORK</button>
-<button class="p" onclick="build()">🏗️ BUILD <small id="hc">$1k</small></button>
-<button class="p" onclick="buyCar()">🚘 CAR <small id="cc">$2k</small></button>
-<button class="g" onclick="openBank()">🏦 BANK</button>
-<button class="pi" onclick="openMarry()">💍 MARRY +$30M BONUS</button>
-<button class="gr" onclick="sleepTogether()">🛏️ SLEEP TOGETHER</button>
-<button class="pi" onclick="makeKid()">👶 HAVE KID (NPC)</button>
-<button class="r" onclick="divorce()">💔 DIVORCE</button>
-</div>
-
-<div class="modal" id="bankM"><div class="box">
-<h3>ZEITGEIST BANK - 15% interest /30sec</h3>
-<input id="bankAmt" type="number" placeholder="Amount">
-<button class="g" onclick="deposit()">Deposit</button><button onclick="withdraw()">Withdraw All</button>
-<button onclick="closeM()" style="background:#333;width:100%;margin-top:8px">Close</button>
-</div></div>
-
-<div class="modal" id="marryM"><div class="box">
-<h3>💍 Marry Player</h3>
-<input id="partnerName" placeholder="Partner username e.g. Ada">
-<p style="font-size:11px">Both enter SAME couple code. Government gives you $30,000,000 instantly to start family life.</p>
-<input id="coupleCode" placeholder="Couple Code e.g. ZLOVE2026">
-<button class="pi" onclick="doMarry()">Marry + Claim $30M</button>
+ hdoMarry()">Marry + Claim $30M</button>
 <button onclick="closeM()" style="background:#333;width:100%;margin-top:8px">Close</button>
 </div></div>
 
@@ -87,47 +24,7 @@ function update(){
  // kids UI
  let row=document.getElementById('kidsRow'); row.innerHTML='';
  kids.forEach((k,i)=>{
-   row.innerHTML+=`<div class=npc>👶 ${k.name}<br>Age:${k.age}<br>Mood:${k.mood}<br><button onclick="feedKid(${i})" style="padding:4px;font-size:10px">Feed $50</button></div>`;
- });
-}
-function work(){ money+= (150+houseLv*50+cars*100)*(married?2:1)*(kids.length?1.2:1); update(); }
-function build(){ if(money>=houseCost && houseLv<5){ money-=houseCost; houseLv++; houseCost=Math.floor(houseCost*2.5); update(); } else alert('Need $'+houseCost); }
-function buyCar(){ if(money>=carCost){ money-=carCost; cars++; carCost=Math.floor(carCost*1.8); update(); } else alert('Need money'); }
-function openBank(){ document.getElementById('bankM').style.display='flex'; }
-function openMarry(){ document.getElementById('marryM').style.display='flex'; }
-function closeM(){ document.getElementById('bankM').style.display='none'; document.getElementById('marryM').style.display='none'; }
-function deposit(){ let a=parseInt(document.getElementById('bankAmt').value); if(a>0 && money>=a){ money-=a; bank+=a; update(); closeM(); } }
-function withdraw(){ money+=bank; bank=0; update(); closeM(); }
-
-function doMarry(){
- let name=document.getElementById('partnerName').value.trim();
- let code=document.getElementById('coupleCode').value.trim();
- if(!name || !code) return alert('Enter partner name and code');
- if(married) return alert('Already married! Divorce first');
- married=true; partner=name;
- money+=30000000; // GOV BONUS
- alert('💍 GOVERNMENT BONUS! You married '+name+'! $30,000,000 credited! You now share same house and same bed. Build together!');
- closeM(); update();
-}
-function sleepTogether(){
- if(!married) return alert('You are single. Marry to sleep together.');
- let now=Date.now();
- if(now-lastSleep<10000) return alert('You already slept. Wait small.');
- lastSleep=now;
- money+=5000*houseLv; // sleep bonus
- document.getElementById('world').style.background='radial-gradient(#2a2a6a,#0a0a12)';
- setTimeout(()=>{ document.getElementById('world').style.background='radial-gradient(#1d2a4a,#0a0a12)'; },1000);
- alert('💤 You and '+partner+' slept together in same bed. Energy restored! +$'+(5000*houseLv)+' bonus for couple productivity.');
- update();
-}
-function makeKid(){
- if(!married) return alert('You must marry first to have kids!');
- if(houseLv<2) return alert('Build at least Bungalow for kids!');
- if(money<2000) return alert('Need $2000 for hospital');
- money-=2000;
- let names=["Zion","Ada","Chuks","Amara","Leo","Zee"];
- let kid={name:names[Math.floor(Math.random()*names.length)]+' Jr.',age:0,mood:'Happy'};
- kids.push(kid);
+   row.push(kid);
  alert('👶 New NPC kid born! '+kid.name+' is now part of family!');
  update();
 }
@@ -149,3 +46,4 @@ update();
 </script>
 </body>
 </html>
+
