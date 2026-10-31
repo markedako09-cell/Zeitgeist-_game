@@ -1,17 +1,151 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Aliade 3D</title><style>*{margin:0;padding:0;box-sizing:border-box}body{overflow:hidden;background:#000;font-family:Arial;touch-action:none}#ui{position:fixed;top:0;left:0;width:100%;display:flex;justify-content:space-between;padding:8px;z-index:10}#ui div{background:#000c;color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:13px}#joy{position:fixed;bottom:20px;left:20px;width:110px;height:110px;background:#fff3;border-radius:50%;border:2px solid #fff;z-index:10}#stick{position:absolute;left:30px;top:30px;width:50px;height:50px;background:#000a;border-radius:50%}#btns{position:fixed;bottom:20px;right:15px;display:flex;flex-direction:column;gap:10px;z-index:10}.b{width:90px;height:48px;border:0;border-radius:12px;color:#fff;font-weight:bold;font-size:14px}#msg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000d;color:#fff;padding:14px 20px;border-radius:12px;display:none;z-index:11}</style><script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script></head><body><div id="ui"><div>💰$<span id="m">50</span></div><div>❤️<span id="h">100</span></div><div>⏰<span id="t">6AM</span></div></div><div id="joy"><div id="stick"></div></div><div id="btns"><button class="b" id="wb" style="background:#FF5722">WORK</button><button class="b" id="eb" style="background:#4CAF50">EAT</button></div><div id="msg"></div><script type="module">
-import * as THREE from 'three';
-let scene=new THREE.Scene();scene.background=new THREE.Color(0x87CEEB);
-let camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,0.1,1000);
-let renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;document.body.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffffff,0x444444,1.2));let dl=new THREE.DirectionalLight(0xffffff,1);dl.position.set(10,20,10);dl.castShadow=true;scene.add(dl);
-let ground=new THREE.Mesh(new THREE.PlaneGeometry(2000,2000),new THREE.MeshStandardMaterial({color:0x6BBE66}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
-function building(x,z,w,d,c,name){let m=new THREE.Mesh(new THREE.BoxGeometry(w,12,d),new THREE.MeshStandardMaterial({color:c}));m.position.set(x,6,z);m.castShadow=true;m.receiveShadow=true;scene.add(m);let canvas=document.createElement('canvas');canvas.width=256;canvas.height=64;let ct=canvas.getContext('2d');ct.fillStyle='#000a';ct.fillRect(0,0,256,64);ct.fillStyle='#fff';ct.font='bold 20px Arial';ct.fillText(name,10,40);let tex=new THREE.CanvasTexture(canvas);let spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex}));spr.position.set(x,18,z);spr.scale.set(30,8,1);scene.add(spr);return {x,z,w,d,name:m.name=name,mesh:m};}
-let blds=[building(-20, -15, 20,14, 0x8D6E63,'MAMA PUT - WORK'), building(35, -10, 18,18, 0x5D4037,'HOUSE'), building(-25, 30, 16,16, 0x4CAF50,'MARKET')];
-let player=new THREE.Group();let body=new THREE.Mesh(new THREE.CapsuleGeometry(1,2,4,8),new THREE.MeshStandardMaterial({color:0x2196F3}));body.position.y=2;player.add(body);player.position.set(0,0,0);scene.add(player);
-let pl={x:0,z:0,m:50,h:100};let cam={x:0,z:20};let joy={x:0,y:0,a:0};let J=document.getElementById('joy'),S=document.getElementById('stick');
-function MSG(t){let M=document.getElementById('msg');M.innerText=t;M.style.display='block';setTimeout(()=>M.style.display='none',2000)}
-function HJ(e){let r=J.getBoundingClientRect(),cx=r.left+55,cy=r.top+55;let X=(e.touches?e.touches[0].clientX:e.clientX)-cx,Y=(e.touches?e.touches[0].clientY:e.clientY)-cy;let d=Math.hypot(X,Y),lim=35;if(d>lim){X=X/d*lim;Y=Y/d*lim}S.style.transform=`translate(${X}px,${Y}px)`;joy.x=X/lim;joy.y=Y/lim}
-J.addEventListener('touchstart',e=>{joy.a=1;HJ(e)});J.addEventListener('touchmove',e=>{if(joy.a)HJ(e);e.preventDefault()},{passive:false});addEventListener('touchend',()=>{joy.a=0;joy.x=0;joy.y=0;S.style.transform='translate(0,0)'});
-function WORK(){for(let b of blds){if(Math.hypot(pl.x-b.x,pl.z-b.z)<20&&b.name.includes('WORK')){pl.m+=20;MSG('Worked! +$20');return}}MSG('Go to MAMA PUT to work!')}function EAT(){if(pl.m>=10){pl.m-=10;pl.h=Math.min(100,pl.h+20);MSG('Ate! +20 health')}else MSG('Need $10!')}document.getElementById('wb').onclick=WORK;document.getElementById('eb').onclick=EAT;
-let tm=360;function animate(){requestAnimationFrame(animate);pl.x+=joy.x*0.3;pl.z+=joy.y*0.3;player.position.x=pl.x;player.position.z=pl.z;if(joy.x||joy.y)player.rotation.y=Math.atan2(joy.x,joy.y);cam.x+=(pl.x-cam.x)*0.05;cam.z+=(pl.z+20-cam.z)*0.05;camera.position.set(cam.x,15,cam.z);camera.lookAt(pl.x,2,pl.z);tm+=0.3;document.getElementById('m').innerText=pl.m;document.getElementById('h').innerText=Math.floor(pl.h);let hr=Math.floor(tm/60)%24,mn=Math.floor(tm%60);document.getElementById('t').innerText=`${hr%12||12}:${String(mn).padStart(2,'0')}${hr>=12?'PM':'AM'}`;renderer.render(scene,camera)}animate();onresize=()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)};MSG('3D Aliade Loaded! Move joystick');
-</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZEITGEIST V3 - Family Life</title>
+<style>
+body{margin:0;font-family:Arial;background:#0a0a12;color:#fff}
+#top{padding:10px;background:#111;display:flex;justify-content:space-between;font-size:13px}
+#world{margin:10px;background:radial-gradient(#1d2a4a,#0a0a12);border-radius:16px;padding:12px;min-height:360px}
+.houseBox{font-size:48px;text-align:center}
+.npcRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.npc{background:#ffffff14;padding:8px 10px;border-radius:12px;font-size:12px}
+#actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:#111}
+button{padding:12px;border:0;border-radius:12px;font-weight:bold;color:#fff}
+.p{background:#7c5cff} .g{background:#ffb700;color:#000} .pi{background:#ff3b9a} .gr{background:#00c06a} .r{background:#ff3a3a}
+.modal{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:10}
+.box{background:#1e1e30;padding:18px;border-radius:14px;width:86%;max-width:320px}
+input{width:100%;padding:10px;border-radius:8px;border:0;margin:6px 0}
+</style>
+</head>
+<body>
+<div id="top">
+<div>💰 $<span id="money">500</span><br>🏦 $<span id="bank">0</span><br>💍 <span id="marryStatus">Single</span></div>
+<div style="text-align:right">🏠 Lv.<span id="hlv">0</span> | 🚗 <span id="cars">0</span><br>👶 Kids: <span id="kidsCount">0</span><br><small id="bedBonus"></small></div>
+</div>
+
+<div id="world">
+<div class="houseBox" id="houseEmoji">🏚️</div>
+<div style="text-align:center" id="houseText">Empty Land</div>
+<div style="text-align:center;margin-top:6px">
+<span id="bedView">🛏️ Single Bed</span> | <span id="coupleView"></span>
+</div>
+
+<div class="npcRow" id="kidsRow"></div>
+
+<div style="margin-top:12px;background:#0006;padding:8px;border-radius:8px;font-size:12px">
+<b>Family House:</b> When married, you BOTH live here. Built together. Sleep same bed = +energy +bonus income next day.
+</div>
+</div>
+
+<div id="actions">
+<button class="p" onclick="work()">💼 WORK</button>
+<button class="p" onclick="build()">🏗️ BUILD <small id="hc">$1k</small></button>
+<button class="p" onclick="buyCar()">🚘 CAR <small id="cc">$2k</small></button>
+<button class="g" onclick="openBank()">🏦 BANK</button>
+<button class="pi" onclick="openMarry()">💍 MARRY +$30M BONUS</button>
+<button class="gr" onclick="sleepTogether()">🛏️ SLEEP TOGETHER</button>
+<button class="pi" onclick="makeKid()">👶 HAVE KID (NPC)</button>
+<button class="r" onclick="divorce()">💔 DIVORCE</button>
+</div>
+
+<div class="modal" id="bankM"><div class="box">
+<h3>ZEITGEIST BANK - 15% interest /30sec</h3>
+<input id="bankAmt" type="number" placeholder="Amount">
+<button class="g" onclick="deposit()">Deposit</button><button onclick="withdraw()">Withdraw All</button>
+<button onclick="closeM()" style="background:#333;width:100%;margin-top:8px">Close</button>
+</div></div>
+
+<div class="modal" id="marryM"><div class="box">
+<h3>💍 Marry Player</h3>
+<input id="partnerName" placeholder="Partner username e.g. Ada">
+<p style="font-size:11px">Both enter SAME couple code. Government gives you $30,000,000 instantly to start family life.</p>
+<input id="coupleCode" placeholder="Couple Code e.g. ZLOVE2026">
+<button class="pi" onclick="doMarry()">Marry + Claim $30M</button>
+<button onclick="closeM()" style="background:#333;width:100%;margin-top:8px">Close</button>
+</div></div>
+
+<script>
+let money=500,bank=0,houseLv=0,cars=0,carCost=2000,houseCost=1000,married=false,partner='',kids=[],lastSleep=0;
+const houses=["🏚️","🏠","🏡","🏘️","🏰","🌆 MANSION"];
+const texts=["Empty Land","Hut","Bungalow","3-Bed Shared","Estate - Couple Home","ZEITGEIST COUPLE MANSION"];
+
+function update(){
+ document.getElementById('money').innerText=money.toLocaleString();
+ document.getElementById('bank').innerText=bank.toLocaleString();
+ document.getElementById('hlv').innerText=houseLv;
+ document.getElementById('cars').innerText=cars;
+ document.getElementById('hc').innerText='$'+houseCost.toLocaleString();
+ document.getElementById('cc').innerText='$'+carCost.toLocaleString();
+ document.getElementById('houseEmoji').innerText=houses[houseLv];
+ document.getElementById('houseText').innerText=texts[houseLv];
+ document.getElementById('marryStatus').innerText=married? 'Married to '+partner : 'Single';
+ document.getElementById('kidsCount').innerText=kids.length;
+ document.getElementById('bedView').innerText=married? '🛏️ Double Bed (Shared)' : '🛏️ Single Bed';
+ document.getElementById('coupleView').innerText=married? '👫 '+partner+' lives here too' : '';
+ document.getElementById('bedBonus').innerText=married? '💤 Sleep bonus active' : '';
+ // kids UI
+ let row=document.getElementById('kidsRow'); row.innerHTML='';
+ kids.forEach((k,i)=>{
+   row.innerHTML+=`<div class=npc>👶 ${k.name}<br>Age:${k.age}<br>Mood:${k.mood}<br><button onclick="feedKid(${i})" style="padding:4px;font-size:10px">Feed $50</button></div>`;
+ });
+}
+function work(){ money+= (150+houseLv*50+cars*100)*(married?2:1)*(kids.length?1.2:1); update(); }
+function build(){ if(money>=houseCost && houseLv<5){ money-=houseCost; houseLv++; houseCost=Math.floor(houseCost*2.5); update(); } else alert('Need $'+houseCost); }
+function buyCar(){ if(money>=carCost){ money-=carCost; cars++; carCost=Math.floor(carCost*1.8); update(); } else alert('Need money'); }
+function openBank(){ document.getElementById('bankM').style.display='flex'; }
+function openMarry(){ document.getElementById('marryM').style.display='flex'; }
+function closeM(){ document.getElementById('bankM').style.display='none'; document.getElementById('marryM').style.display='none'; }
+function deposit(){ let a=parseInt(document.getElementById('bankAmt').value); if(a>0 && money>=a){ money-=a; bank+=a; update(); closeM(); } }
+function withdraw(){ money+=bank; bank=0; update(); closeM(); }
+
+function doMarry(){
+ let name=document.getElementById('partnerName').value.trim();
+ let code=document.getElementById('coupleCode').value.trim();
+ if(!name || !code) return alert('Enter partner name and code');
+ if(married) return alert('Already married! Divorce first');
+ married=true; partner=name;
+ money+=30000000; // GOV BONUS
+ alert('💍 GOVERNMENT BONUS! You married '+name+'! $30,000,000 credited! You now share same house and same bed. Build together!');
+ closeM(); update();
+}
+function sleepTogether(){
+ if(!married) return alert('You are single. Marry to sleep together.');
+ let now=Date.now();
+ if(now-lastSleep<10000) return alert('You already slept. Wait small.');
+ lastSleep=now;
+ money+=5000*houseLv; // sleep bonus
+ document.getElementById('world').style.background='radial-gradient(#2a2a6a,#0a0a12)';
+ setTimeout(()=>{ document.getElementById('world').style.background='radial-gradient(#1d2a4a,#0a0a12)'; },1000);
+ alert('💤 You and '+partner+' slept together in same bed. Energy restored! +$'+(5000*houseLv)+' bonus for couple productivity.');
+ update();
+}
+function makeKid(){
+ if(!married) return alert('You must marry first to have kids!');
+ if(houseLv<2) return alert('Build at least Bungalow for kids!');
+ if(money<2000) return alert('Need $2000 for hospital');
+ money-=2000;
+ let names=["Zion","Ada","Chuks","Amara","Leo","Zee"];
+ let kid={name:names[Math.floor(Math.random()*names.length)]+' Jr.',age:0,mood:'Happy'};
+ kids.push(kid);
+ alert('👶 New NPC kid born! '+kid.name+' is now part of family!');
+ update();
+}
+function feedKid(i){
+ if(money>=50){ money-=50; kids[i].mood='Full & Happy'; kids[i].age++; update(); }
+}
+function divorce(){
+ if(!married) return alert('You are single');
+ if(!confirm('Divorce '+partner+'? You will lose 40% money, house -1 level, kids stay with one parent.')) return;
+ money=Math.floor(money*0.6);
+ houseLv=Math.max(0,houseLv-1);
+ married=false; partner='';
+ alert('💔 Divorced. House shared split. Kids stay.');
+ update();
+}
+setInterval(()=>{ if(bank>0){ bank=Math.floor(bank*1.15); update(); } },30000);
+setInterval(()=>{ kids.forEach(k=>k.age+=0.1); update(); },20000);
+update();
+</script>
+</body>
+</html>
